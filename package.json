@@ -4,9 +4,12 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Full-stack placement operating system — Job → JD Analysis → Resume → Applications → Readiness",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npx vite build",
     "typecheck": "tsc -b --noEmit",
     "preview": "vite preview"
   },
