@@ -51,3 +51,5 @@ npm run build
 ```
 
 Output is in `dist/`. Deploy to Vercel, Netlify, or any static host. After deploy, set the **Deployment link** and **GitHub link** on the Proof page (`/proof`).
+
+**Vercel:** The project is pinned to **Node 20** (`.nvmrc` and `package.json` engines). If Runtime Settings show a Node.js version warning, open **Project Settings → General → Node.js Version** and select **20.x**.

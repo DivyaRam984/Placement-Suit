@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Full-stack placement operating system — Job → JD Analysis → Resume → Applications → Readiness",
   "engines": {
-    "node": "20.x"
+    "node": "20"
   },
   "scripts": {
     "dev": "vite",
