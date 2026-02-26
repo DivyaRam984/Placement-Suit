@@ -87,7 +87,7 @@ export interface PlatformNotification {
   actionPath?: string;
 }
 
-/** Global User Object — single source of truth */
+/** Global User Object — single source of truth (legacy, use PlacementUser) */
 export interface GlobalUserState {
   preferences: UserPreferences;
   resumeData: ResumeData | null;
@@ -95,7 +95,22 @@ export interface GlobalUserState {
   applications: Application[];
   jdAnalyses: JDAnalysis[];
   readinessScore: ReadinessScore | null;
-  lastActivity: string; // ISO
+  lastActivity: string;
+  notifications: PlatformNotification[];
+}
+
+/**
+ * Unified Data Model — single localStorage key "placementUser".
+ * All app state lives here. Future backend-ready.
+ */
+export interface PlacementUser {
+  preferences: UserPreferences;
+  resumeData: ResumeData;
+  jobMatches: JobMatch[];
+  applications: Application[];
+  jdAnalyses: JDAnalysis[];
+  readinessScore: number;
+  lastActivity: string;
   notifications: PlatformNotification[];
 }
 

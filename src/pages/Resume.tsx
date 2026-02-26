@@ -1,13 +1,12 @@
 import { usePlatformStore } from '@/store/usePlatformStore';
-import { createDefaultResumeData } from '@/types/platform';
+import { getReadinessBreakdown } from '@/services/readinessScore';
 import type { ResumeData } from '@/types/platform';
 import styles from './Resume.module.css';
 
 export default function Resume() {
-  const { resumeData, setResumeData, readinessScore } = usePlatformStore();
-  const data = resumeData ?? createDefaultResumeData();
-
-  const atsScore = readinessScore?.resumeAtsScore ?? 0;
+  const { resumeData, setResumeData } = usePlatformStore();
+  const data = resumeData;
+  const atsScore = getReadinessBreakdown(usePlatformStore.getState()).resumeAtsScore;
   const below70 = atsScore > 0 && atsScore < 70;
 
   const update = (patch: Partial<ResumeData>) => {

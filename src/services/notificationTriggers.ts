@@ -4,8 +4,9 @@
  * System triggers: high match job, resume < 70, JD analyzed no alignment, interview 24h, no activity 3d
  */
 
-import type { GlobalUserState, PlatformNotification } from '@/types/platform';
+import type { PlacementUser, PlatformNotification } from '@/types/platform';
 import { usePlatformStore } from '@/store/usePlatformStore';
+import { getReadinessBreakdown } from '@/services/readinessScore';
 
 const NOTIFICATION_TYPES = {
   high_match_job: { title: 'New high match job', message: 'A job closely matching your profile was found.' },
@@ -22,15 +23,16 @@ function daysSince(iso: string): number {
   return (Date.now() - new Date(iso).getTime()) / (24 * 60 * 60 * 1000);
 }
 
-function hasNotification(state: GlobalUserState, type: PlatformNotification['type']): boolean {
+function hasNotification(state: PlacementUser, type: PlatformNotification['type']): boolean {
   const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
   return state.notifications.some((n) => n.type === type && n.createdAt >= cutoff);
 }
 
 /** Runs behavior-based notification triggers from current platform state. */
 export function runNotificationTriggers(): void {
-  const state = usePlatformStore.getState() as unknown as GlobalUserState;
+  const state = usePlatformStore.getState();
   const add = usePlatformStore.getState().addNotification;
+  const { resumeAtsScore: ats } = getReadinessBreakdown(state);
 
   // New high match job (if we have a job with matchScore >= 80 and not already notified recently)
   if (!hasNotification(state, 'high_match_job')) {
@@ -47,7 +49,6 @@ export function runNotificationTriggers(): void {
   }
 
   // Resume score below 70
-  const ats = state.readinessScore?.resumeAtsScore ?? 0;
   if (ats > 0 && ats < 70 && !hasNotification(state, 'resume_below_70')) {
     add({
       type: 'resume_below_70',

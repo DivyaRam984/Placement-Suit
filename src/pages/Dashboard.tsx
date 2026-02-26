@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { usePlatformStore } from '@/store/usePlatformStore';
+import { getReadinessBreakdown } from '@/services/readinessScore';
 import styles from './Dashboard.module.css';
 
 export default function Dashboard() {
@@ -13,10 +14,11 @@ export default function Dashboard() {
     markNotificationRead,
   } = usePlatformStore();
 
+  const breakdown = getReadinessBreakdown(usePlatformStore.getState());
   const top5Jobs = jobMatches.slice(0, 5);
-  const atsScore = readinessScore?.resumeAtsScore ?? 0;
+  const atsScore = breakdown.resumeAtsScore;
   const jdScore = jdAnalyses[0]?.alignmentScore ?? 0;
-  const placementScore = readinessScore?.placementScore ?? 0;
+  const placementScore = readinessScore;
 
   const applied = applications.filter((a) => a.stage === 'applied' || a.stage === 'interview_scheduled' || a.stage === 'interview_completed').length;
   const interviews = applications.filter((a) => a.stage === 'interview_scheduled' || a.stage === 'interview_completed').length;
@@ -24,7 +26,7 @@ export default function Dashboard() {
 
   const weakSkillAlert = jdAnalyses[0]?.missingSkills?.length ? jdAnalyses[0].missingSkills.slice(0, 3) : null;
 
-  const nextAction = !resumeData?.name
+  const nextAction = !resumeData.name
     ? 'Complete your resume'
     : atsScore < 70
     ? 'Improve resume ATS score (add skills & experience)'

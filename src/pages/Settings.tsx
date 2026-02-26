@@ -31,7 +31,7 @@ export default function Settings() {
 
       <section className={styles.card}>
         <h2>Data</h2>
-        <p className={styles.muted}>All data is stored in one structured platform state (single localStorage key). No isolated keys.</p>
+        <p className={styles.muted}>All data is stored under one key: <code>placementUser</code>. No isolated keys. Load via getUser(), save via updateUser().</p>
         <button type="button" onClick={clearNotifications} className={styles.btn}>Clear notifications</button>
       </section>
     </div>

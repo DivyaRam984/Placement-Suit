@@ -1,36 +1,27 @@
 /**
- * Single global state for Placement Suite.
- * Architecture: one global state, no duplicated logic, deterministic.
- * Persisted as one structured key (no isolated localStorage keys).
+ * Single global state — reads/writes only via userStore.
+ * No direct localStorage. All persistence through getUser() / updateUser().
  */
 
 import { create } from 'zustand';
 import type {
-  GlobalUserState,
+  PlacementUser,
   JobMatch,
   Application,
   JDAnalysis,
   ResumeData,
-  ReadinessScore,
   ApplicationStage,
   PlatformNotification,
 } from '@/types/platform';
-import { createDefaultGlobalState } from '@/types/platform';
-import { persistState, loadState } from '@/services/platformStorage';
-import { computeReadinessScore } from '@/services/readinessScore';
+import { getDefaultUser } from '@/store/userStore';
+import { getUser, updateUser } from '@/store/userStore';
 
-const STORAGE_KEY = 'placement_suite_platform_state';
-
-function loadPersisted(): GlobalUserState {
-  try {
-    const raw = loadState(STORAGE_KEY);
-    if (raw && typeof raw === 'object') return raw as GlobalUserState;
-  } catch (_) {}
-  return createDefaultGlobalState();
+function syncFromStorage(): PlacementUser {
+  return getUser();
 }
 
 interface PlatformActions {
-  setPreferences: (p: Partial<GlobalUserState['preferences']>) => void;
+  setPreferences: (p: Partial<PlacementUser['preferences']>) => void;
   setResumeData: (data: ResumeData | null) => void;
   addJobMatch: (job: JobMatch) => void;
   removeJobMatch: (id: string) => void;
@@ -39,98 +30,78 @@ interface PlatformActions {
   updateApplicationStage: (id: string, stage: ApplicationStage, meta?: { interviewAt?: string }) => void;
   addJDAnalysis: (analysis: JDAnalysis) => void;
   setJDAnalysis: (analyses: JDAnalysis[]) => void;
-  setReadinessScore: (score: ReadinessScore | null) => void;
-  touchLastActivity: () => void;
   addNotification: (n: Omit<PlatformNotification, 'id' | 'read' | 'createdAt'>) => void;
   markNotificationRead: (id: string) => void;
   clearNotifications: () => void;
-  /** Recompute readiness from current state (deterministic) */
+  /** Sync state from storage (e.g. after migration). Readiness is auto-updated in userStore. */
   recomputeReadiness: () => void;
-  /** Persist current state to storage */
-  persist: () => void;
 }
 
-export type PlatformStore = GlobalUserState & PlatformActions;
+export type PlatformStore = PlacementUser & PlatformActions;
 
 export const usePlatformStore = create<PlatformStore>((set, get) => ({
-  ...loadPersisted(),
+  ...syncFromStorage(),
 
   setPreferences: (p) => {
-    set((s) => ({ preferences: { ...s.preferences, ...p } }));
-    get().persist();
+    updateUser({ preferences: { ...get().preferences, ...p } });
+    set((s) => ({ ...s, ...syncFromStorage() }));
   },
 
   setResumeData: (data) => {
-    set({ resumeData: data ?? null });
-    get().recomputeReadiness();
-    get().persist();
+    const next = data ?? getDefaultUser().resumeData;
+    updateUser({ resumeData: next });
+    set((s) => ({ ...s, ...syncFromStorage() }));
   },
 
   addJobMatch: (job) => {
-    set((s) => ({ jobMatches: [job, ...s.jobMatches.filter((m) => m.id !== job.id)].slice(0, 200) }));
-    get().touchLastActivity();
-    get().persist();
+    const current = get();
+    const jobMatches = [job, ...current.jobMatches.filter((m) => m.id !== job.id)].slice(0, 200);
+    updateUser({ jobMatches });
+    set((s) => ({ ...s, ...syncFromStorage() }));
   },
 
   removeJobMatch: (id) => {
-    set((s) => ({ jobMatches: s.jobMatches.filter((m) => m.id !== id) }));
-    get().persist();
+    updateUser({ jobMatches: get().jobMatches.filter((m) => m.id !== id) });
+    set((s) => ({ ...s, ...syncFromStorage() }));
   },
 
   setApplications: (apps) => {
-    set({ applications: apps });
-    get().recomputeReadiness();
-    get().persist();
+    updateUser({ applications: apps });
+    set((s) => ({ ...s, ...syncFromStorage() }));
   },
 
   addApplication: (app) => {
-    set((s) => ({ applications: [app, ...s.applications.filter((a) => a.id !== app.id)] }));
-    get().recomputeReadiness();
-    get().touchLastActivity();
-    get().persist();
+    const current = get();
+    const applications = [app, ...current.applications.filter((a) => a.id !== app.id)];
+    updateUser({ applications });
+    set((s) => ({ ...s, ...syncFromStorage() }));
   },
 
   updateApplicationStage: (id, stage, meta) => {
-    set((s) => ({
-      applications: s.applications.map((a) =>
-        a.id === id
-          ? {
-              ...a,
-              stage,
-              interviewAt: meta?.interviewAt ?? a.interviewAt,
-              updatedAt: new Date().toISOString(),
-            }
-          : a
-      ),
-    }));
-    get().recomputeReadiness();
-    get().touchLastActivity();
-    get().persist();
+    const applications = get().applications.map((a) =>
+      a.id === id
+        ? {
+            ...a,
+            stage,
+            interviewAt: meta?.interviewAt ?? a.interviewAt,
+            updatedAt: new Date().toISOString(),
+          }
+        : a
+    );
+    updateUser({ applications });
+    set((s) => ({ ...s, ...syncFromStorage() }));
   },
 
   addJDAnalysis: (analysis) => {
-    set((s) => ({
-      jdAnalyses: [analysis, ...s.jdAnalyses.filter((a) => a.id !== analysis.id)].slice(0, 100),
-    }));
-    get().recomputeReadiness();
-    get().touchLastActivity();
-    get().persist();
+    const current = get();
+    const jdAnalyses = [analysis, ...current.jdAnalyses.filter((a) => a.id !== analysis.id)].slice(0, 100);
+    updateUser({ jdAnalyses });
+    set((s) => ({ ...s, ...syncFromStorage() }));
   },
 
   setJDAnalysis: (analyses) => {
-    set({ jdAnalyses: analyses });
-    get().recomputeReadiness();
-    get().persist();
-  },
-
-  setReadinessScore: (score) => {
-    set({ readinessScore: score });
-    get().persist();
-  },
-
-  touchLastActivity: () => {
-    set({ lastActivity: new Date().toISOString() });
-    get().persist();
+    updateUser({ jdAnalyses: analyses });
+    set((s) => ({ ...s, ...syncFromStorage() }));
   },
 
   addNotification: (n) => {
@@ -140,41 +111,27 @@ export const usePlatformStore = create<PlatformStore>((set, get) => ({
       read: false,
       createdAt: new Date().toISOString(),
     };
-    set((s) => ({ notifications: [notification, ...s.notifications].slice(0, 50) }));
-    get().persist();
+    const current = get();
+    const notifications = [notification, ...current.notifications].slice(0, 50);
+    updateUser({ notifications });
+    set((s) => ({ ...s, ...syncFromStorage() }));
   },
 
   markNotificationRead: (id) => {
-    set((s) => ({
-      notifications: s.notifications.map((n) => (n.id === id ? { ...n, read: true } : n)),
-    }));
-    get().persist();
+    const notifications = get().notifications.map((n) =>
+      n.id === id ? { ...n, read: true } : n
+    );
+    updateUser({ notifications });
+    set((s) => ({ ...s, ...syncFromStorage() }));
   },
 
   clearNotifications: () => {
-    set({ notifications: [] });
-    get().persist();
+    updateUser({ notifications: [] });
+    set((s) => ({ ...s, ...syncFromStorage() }));
   },
 
   recomputeReadiness: () => {
-    const state = get();
-    const score = computeReadinessScore(state);
-    set({ readinessScore: score });
-    get().persist();
-  },
-
-  persist: () => {
-    const state = get();
-    const toPersist: GlobalUserState = {
-      preferences: state.preferences,
-      resumeData: state.resumeData,
-      jobMatches: state.jobMatches,
-      applications: state.applications,
-      jdAnalyses: state.jdAnalyses,
-      readinessScore: state.readinessScore,
-      lastActivity: state.lastActivity,
-      notifications: state.notifications,
-    };
-    persistState(STORAGE_KEY, toPersist);
+    updateUser({});
+    set((s) => ({ ...s, ...syncFromStorage() }));
   },
 }));

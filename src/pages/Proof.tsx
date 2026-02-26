@@ -13,7 +13,6 @@ const CHECKLIST = [
 
 export default function Proof() {
   const readinessScore = usePlatformStore((s) => s.readinessScore);
-  const hasScore = readinessScore != null;
 
   return (
     <div className={styles.root}>
@@ -28,8 +27,8 @@ export default function Proof() {
               <Link to={path}>{label}</Link>
             </li>
           ))}
-          <li className={hasScore ? styles.ok : ''}>
-            Placement Score visible: <strong>{hasScore ? readinessScore!.placementScore : '—'}</strong>/100
+          <li className={styles.ok}>
+            Placement Score visible: <strong>{readinessScore}</strong>/100
           </li>
           <li>
             <a href="#" onClick={(e) => { e.preventDefault(); }}>Deployment link</a> <span className={styles.muted}>(set after deploy)</span>

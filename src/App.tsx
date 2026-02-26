@@ -18,8 +18,8 @@ function App() {
     jobMatchesLen: s.jobMatches.length,
     applicationsLen: s.applications.length,
     jdAnalysesLen: s.jdAnalyses.length,
-    atsScore: s.readinessScore?.resumeAtsScore,
-    hasResume: !!s.resumeData,
+    readinessScore: s.readinessScore,
+    hasResume: !!s.resumeData.name,
   }));
 
   const recomputeReadiness = usePlatformStore((s) => s.recomputeReadiness);
@@ -30,7 +30,7 @@ function App() {
 
   useEffect(() => {
     runNotificationTriggers();
-  }, [triggerDeps.lastActivity, triggerDeps.jobMatchesLen, triggerDeps.applicationsLen, triggerDeps.jdAnalysesLen, triggerDeps.atsScore, triggerDeps.hasResume]);
+  }, [triggerDeps.lastActivity, triggerDeps.jobMatchesLen, triggerDeps.applicationsLen, triggerDeps.jdAnalysesLen, triggerDeps.readinessScore, triggerDeps.hasResume]);
 
   return (
     <BrowserRouter>

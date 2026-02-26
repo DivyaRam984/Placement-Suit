@@ -1,58 +1,61 @@
 /**
- * Step 5 — Central Readiness Score
- * Unified formula. Deterministic. No random scoring.
- * Placement Score 0–100 = weighted sum of:
- *   Job Match Quality 30% + JD Skill Alignment 25% + Resume ATS 25% + Application Progress 10% + Practice Completion 10%
+ * Central Readiness Score — deterministic, single number 0–100.
+ * Weighted: Job Match 30% + JD Alignment 25% + Resume ATS 25% + App Progress 10% + Practice 10%.
  */
 
-import type { GlobalUserState, ReadinessScore } from '@/types/platform';
-import { DEFAULT_READINESS } from '@/types/platform';
+import type { PlacementUser } from '@/types/platform';
 
-export function computeReadinessScore(state: GlobalUserState): ReadinessScore {
-  const jobMatchQuality = computeJobMatchQuality(state);
-  const jdSkillAlignment = computeJDSkillAlignment(state);
-  const resumeAtsScore = computeResumeAtsScore(state);
-  const applicationProgress = computeApplicationProgress(state);
-  const practiceCompletion = state.readinessScore?.practiceCompletion ?? 0; // could be from practice module
+export function computeReadinessScoreNumber(user: PlacementUser): number {
+  const jobMatchQuality = computeJobMatchQuality(user);
+  const jdSkillAlignment = computeJDSkillAlignment(user);
+  const resumeAtsScore = computeResumeAtsScore(user);
+  const applicationProgress = computeApplicationProgress(user);
+  const practiceCompletion = 0; // optional future: user.practiceCompletion ?? 0
 
-  const placementScore = Math.round(
+  const score = Math.round(
     jobMatchQuality * 0.3 +
       jdSkillAlignment * 0.25 +
       resumeAtsScore * 0.25 +
       applicationProgress * 0.1 +
       practiceCompletion * 0.1
   );
+  return Math.min(100, Math.max(0, score));
+}
 
+/** For UI: breakdown of readiness components (not persisted). */
+export interface ReadinessBreakdown {
+  placementScore: number;
+  jobMatchQuality: number;
+  jdSkillAlignment: number;
+  resumeAtsScore: number;
+  applicationProgress: number;
+}
+
+export function getReadinessBreakdown(user: PlacementUser): ReadinessBreakdown {
   return {
-    ...DEFAULT_READINESS,
-    placementScore: Math.min(100, Math.max(0, placementScore)),
-    jobMatchQuality,
-    jdSkillAlignment,
-    resumeAtsScore,
-    applicationProgress,
-    practiceCompletion,
-    updatedAt: new Date().toISOString(),
+    placementScore: user.readinessScore,
+    jobMatchQuality: computeJobMatchQuality(user),
+    jdSkillAlignment: computeJDSkillAlignment(user),
+    resumeAtsScore: computeResumeAtsScore(user),
+    applicationProgress: computeApplicationProgress(user),
   };
 }
 
-function computeJobMatchQuality(state: GlobalUserState): number {
-  if (state.jobMatches.length === 0) return 0;
-  const top = state.jobMatches.slice(0, 10);
+function computeJobMatchQuality(user: PlacementUser): number {
+  if (user.jobMatches.length === 0) return 0;
+  const top = user.jobMatches.slice(0, 10);
   const sum = top.reduce((a, j) => a + j.matchScore, 0);
   return Math.round(sum / top.length);
 }
 
-function computeJDSkillAlignment(state: GlobalUserState): number {
-  if (state.jdAnalyses.length === 0) return 0;
-  const latest = state.jdAnalyses[0];
-  return latest.alignmentScore ?? 0;
+function computeJDSkillAlignment(user: PlacementUser): number {
+  if (user.jdAnalyses.length === 0) return 0;
+  return user.jdAnalyses[0].alignmentScore ?? 0;
 }
 
-function computeResumeAtsScore(state: GlobalUserState): number {
-  if (!state.resumeData) return 0;
-  // Deterministic ATS-style score: based on sections filled and skill count
+function computeResumeAtsScore(user: PlacementUser): number {
+  const r = user.resumeData;
   let score = 0;
-  const r = state.resumeData;
   if (r.name && r.email) score += 20;
   if (r.summary && r.summary.length > 50) score += 15;
   if (r.skills.length >= 5) score += 25;
@@ -62,8 +65,8 @@ function computeResumeAtsScore(state: GlobalUserState): number {
   return Math.min(100, score);
 }
 
-function computeApplicationProgress(state: GlobalUserState): number {
-  const apps = state.applications;
+function computeApplicationProgress(user: PlacementUser): number {
+  const apps = user.applications;
   if (apps.length === 0) return 0;
   const weights: Record<string, number> = {
     saved: 10,
