@@ -6,7 +6,8 @@
   "description": "Full-stack placement operating system — Job → JD Analysis → Resume → Applications → Readiness",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
+    "typecheck": "tsc -b --noEmit",
     "preview": "vite preview"
   },
   "dependencies": {
