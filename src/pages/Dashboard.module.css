@@ -21,6 +21,8 @@
 .jobList li { padding: 0.25rem 0; }
 .alert { background: rgba(255, 173, 31, 0.1); border: 1px solid var(--warning); border-radius: var(--radius); padding: 1rem; margin-bottom: 1.5rem; }
 .alert h2 { margin: 0 0 0.5rem; font-size: 1rem; }
+.alertList { margin: 0.5rem 0 0.75rem; padding-left: 1.25rem; }
+.alertList li { margin: 0.25rem 0; }
 .nextAction { font-size: 1.05rem; color: var(--accent); }
 .notifList { list-style: none; padding: 0; margin: 0; }
 .notifList li { padding: 0.5rem 0; border-bottom: 1px solid var(--border); display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
