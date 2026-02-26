@@ -1,0 +1,17 @@
+.root { }
+.root h1 { margin: 0 0 0.25rem; }
+.tagline { font-size: 1.1rem; color: var(--accent); margin: 0 0 2rem; }
+
+.checklist, .arch {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.checklist h2, .arch h2 { font-size: 1rem; margin: 0 0 0.75rem; }
+.checklist ul, .arch ul { margin: 0.5rem 0; padding-left: 1.25rem; }
+.checklist li, .arch li { margin: 0.35rem 0; }
+.ok { color: var(--success); }
+.muted { color: var(--text-muted); font-size: 0.9rem; }
+.constraints { margin-top: 1rem; color: var(--text-muted); font-style: italic; }

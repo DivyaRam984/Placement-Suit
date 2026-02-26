@@ -1,0 +1,48 @@
+.root { }
+.root h1 { margin: 0 0 0.25rem; }
+.sub { color: var(--text-muted); margin: 0 0 1rem; }
+
+.atsBox {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+.atsBox p { margin: 0.5rem 0 0; font-size: 0.9rem; }
+.good { color: var(--success); }
+.warn { color: var(--warning); }
+.nudge { color: var(--text-muted); }
+
+.form label, .section h2 { display: block; margin: 0.75rem 0 0.25rem; font-size: 0.95rem; }
+.form label:first-of-type { margin-top: 0; }
+.input, .textarea {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+.textarea { max-width: 100%; resize: vertical; }
+
+.skills { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin: 0.5rem 0; }
+.skillTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: var(--bg-elevated);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+}
+.skillTag button { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0 0.15rem; }
+.hint { color: var(--text-muted); font-size: 0.85rem; margin: 0.25rem 0; }
+
+.section { margin-top: 2rem; }
+.section h2 { margin-bottom: 0.5rem; }
+.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin-bottom: 0.75rem; }
+.card .input { max-width: 100%; }
+.addBtn { padding: 0.5rem 1rem; background: var(--bg-elevated); border: 1px dashed var(--border); color: var(--text-muted); border-radius: var(--radius-sm); margin-top: 0.25rem; }

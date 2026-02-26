@@ -1,0 +1,37 @@
+.root { }
+.root h1 { margin: 0 0 0.25rem; }
+.sub { color: var(--text-muted); margin: 0 0 1.5rem; }
+
+.pipeline {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+  overflow-x: auto;
+}
+
+.column {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  min-width: 160px;
+}
+
+.column h3 { font-size: 0.95rem; margin: 0 0 0.25rem; }
+.count { color: var(--text-muted); font-size: 0.85rem; }
+
+.card {
+  background: var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem;
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+}
+.card strong { display: block; }
+.company { color: var(--text-muted); font-size: 0.85rem; }
+.date { margin-top: 0.5rem; width: 100%; padding: 0.35rem; font-size: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-card); color: var(--text); }
+.stageBtns { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.5rem; }
+.stageBtn, .active { padding: 0.25rem 0.5rem; font-size: 0.75rem; border-radius: 4px; border: none; background: var(--bg-card); color: var(--text-muted); }
+.active { background: var(--accent); color: white; }
+
+.empty { color: var(--text-muted); }

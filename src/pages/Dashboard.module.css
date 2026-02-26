@@ -1,0 +1,28 @@
+.root { }
+.root h1 { margin: 0 0 0.25rem; }
+.sub { color: var(--text-muted); margin: 0 0 1.5rem; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+.card h2 { font-size: 0.95rem; margin: 0 0 0.5rem; color: var(--text-muted); }
+.bigScore { font-size: 2.5rem; font-weight: 700; color: var(--accent); }
+.score { font-size: 1.5rem; font-weight: 600; }
+.muted { color: var(--text-muted); font-size: 0.9rem; margin: 0.25rem 0 0; }
+
+.section { margin-bottom: 1.5rem; }
+.section h2 { font-size: 1rem; margin: 0 0 0.5rem; }
+.pipeline { display: flex; gap: 1.5rem; margin-bottom: 0.5rem; }
+.jobList { list-style: none; padding: 0; margin: 0; }
+.jobList li { padding: 0.25rem 0; }
+.alert { background: rgba(255, 173, 31, 0.1); border: 1px solid var(--warning); border-radius: var(--radius); padding: 1rem; margin-bottom: 1.5rem; }
+.alert h2 { margin: 0 0 0.5rem; font-size: 1rem; }
+.nextAction { font-size: 1.05rem; color: var(--accent); }
+.notifList { list-style: none; padding: 0; margin: 0; }
+.notifList li { padding: 0.5rem 0; border-bottom: 1px solid var(--border); display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.notifList li.read { opacity: 0.7; }
+.notifList button { font-size: 0.85rem; color: var(--text-muted); background: none; border: none; }

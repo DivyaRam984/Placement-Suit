@@ -1,0 +1,37 @@
+.root { }
+.root h1 { margin: 0 0 0.25rem; }
+.sub { color: var(--text-muted); margin: 0 0 1rem; }
+
+.selectRow { margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+.select { padding: 0.5rem; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-card); color: var(--text); min-width: 220px; }
+
+.textarea {
+  width: 100%;
+  padding: 1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  resize: vertical;
+  margin-bottom: 1rem;
+}
+
+.results {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-bottom: 2rem;
+}
+.results h2 { font-size: 1.1rem; margin: 0 0 0.75rem; }
+.results p { margin: 0.5rem 0; }
+.good { color: var(--success); }
+.warn { color: var(--warning); }
+.btn { margin-top: 0.75rem; padding: 0.5rem 1rem; background: var(--accent); color: white; border: none; border-radius: var(--radius-sm); font-weight: 600; }
+
+.past h2 { font-size: 1rem; margin: 0 0 0.5rem; }
+.ul { list-style: none; padding: 0; margin: 0; }
+.card { padding: 0.5rem 0; color: var(--text-muted); font-size: 0.95rem; }
+.empty { color: var(--text-muted); }
